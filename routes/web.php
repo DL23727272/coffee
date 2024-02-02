@@ -5,6 +5,7 @@ use App\Http\Controllers\AddToCartController;
 use App\Http\Controllers\GetCartContentController;
 use App\Http\Controllers\RemoveFromCartController ;
 use App\Http\Controllers\PlaceOrderController;
+use App\Http\Controllers\OrderController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,6 +29,9 @@ Route::get('/cart', function () {
 Route::get('/order', function () {
     return view('order');
 });
+Route::get('/admin', function () {
+    return view('admin');
+});
 
 
 Route::post('/addToCart', [AddToCartController::class, 'addToCart'])->name('addToCart');
@@ -41,3 +45,7 @@ Route::post('/placeOrder', [PlaceOrderController::class, 'placeOrder'])->name('p
 
 Route::post('/clearCart', 'CartController@clearCart')->name('clearCart');
 
+Route::get('/admin', [OrderController::class, 'showOrders']);
+
+
+Route::post('/mark-order-as-done', [OrderController::class, 'markOrderAsDone'])->name('markOrderAsDone');
