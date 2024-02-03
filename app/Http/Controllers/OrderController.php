@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Log;
 class OrderController extends Controller
 {
     public function showOrders()
@@ -15,9 +15,17 @@ class OrderController extends Controller
 
     public function markOrderAsDone(Request $request)
     {
-        $orderId = $request->input('orderId');
-        DB::table('orders')->where('id', $orderId)->update(['status' => 'done']);
+        try {
+            $orderId = $request->input('orderId');
 
-        return response()->json(['status' => 'success']);
+            DB::table('orders')->where('id', $orderId)->delete();
+
+            return response()->json(['status' => 'success']);
+        } catch (\Exception $e) {
+         
+            Log::error($e);
+
+            return response()->json(['status' => 'error', 'message' => 'Failed to update order status.']);
+        }
     }
 }

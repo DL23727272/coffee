@@ -83,7 +83,6 @@
 
 <!-- JavaScript for updating cart content -->
 <script>
-    // Function to refresh cart content
     function refreshCart() {
         calculateTotalAmount();
         $.ajax({
@@ -111,104 +110,100 @@
         });
     }
 
-    // Function to remove an item from the cart
     function removeFromCart(index) {
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("removeFromCart") }}',
-        data: {
-            index: index,
-            _token: '{{ csrf_token() }}', // Include CSRF token
-        },
-        dataType: 'json',
-        success: function(response) {
-            if (response.status === 'success') {
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("removeFromCart") }}',
+            data: {
+                index: index,
+                _token: '{{ csrf_token() }}',
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
 
-                alertify.success('Item removed successfully!');
-                setTimeout(function() {
-                    location.reload();
-                }, 1000);
-            } else {
-                alertify.error('Failed to remove the item.');
+                    alertify.success('Item removed successfully!');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                } else {
+                    alertify.error('Failed to remove the item.');
+                }
+            },
+            error: function() {
+                alertify.error('An error occurred while removing the item.');
             }
-        },
-        error: function() {
-            alertify.error('An error occurred while removing the item.');
-        }
-    });
-}
+        });
+    }
 
 
-   // Function to calculate and display the total amount as an integer
     function calculateTotalAmount() {
-            var totalAmount = 0;
+        var totalAmount = 0;
 
-            $('#cartTable tbody tr').each(function() {
-                var priceText = $(this).find('.price').text().replace('₱', '').trim();
-                var price = parseFloat(priceText);
+        $('#cartTable tbody tr').each(function() {
+            var priceText = $(this).find('.price').text().replace('₱', '').trim();
+            var price = parseFloat(priceText);
 
-                if (!isNaN(price)) {
-                    totalAmount += Math.round(price * 100);
-                }
+            if (!isNaN(price)) {
+                totalAmount += Math.round(price * 100);
+            }
+        });
+
+        $('#totalAmount').text('₱' + (totalAmount / 100).toFixed(2));
+    }
+
+
+    function placeOrder() {
+        var orderDetails = [];
+
+        $('#cartTable tbody tr').each(function() {
+            var productName = $(this).find('.product-name').text();
+            var customerName = $(this).find('.customer-name').text();
+            var size = $(this).find('.size').text();
+            var temperature = $(this).find('.temperature').text();
+            var price = parseFloat($(this).find('.price').text().replace('₱', '').trim());
+
+            orderDetails.push({
+                productName: productName,
+                customerName: customerName,
+                size: size,
+                temperature: temperature,
+                price: price
             });
+        });
+        console.log('Order Details:', orderDetails);
 
-            $('#totalAmount').text('₱' + (totalAmount / 100).toFixed(2));
-        }
-
-
-        function placeOrder() {
-            var orderDetails = [];
-
-            $('#cartTable tbody tr').each(function() {
-                var productName = $(this).find('.product-name').text();
-                var customerName = $(this).find('.customer-name').text();
-                var size = $(this).find('.size').text();
-                var temperature = $(this).find('.temperature').text();
-                var price = parseFloat($(this).find('.price').text().replace('₱', '').trim());
-
-                // Push the order details into the array
-                orderDetails.push({
-                    productName: productName,
-                    customerName: customerName,
-                    size: size,
-                    temperature: temperature,
-                    price: price
-                });
-            });
-            console.log('Order Details:', orderDetails);
-
-            $.ajax({
-                type: 'POST',
-                url: '{{ route("placeOrder") }}',
-                data: {
-                    orders: orderDetails,
-                    _token: '{{ csrf_token() }}',
+        $.ajax({
+            type: 'POST',
+            url: '{{ route("placeOrder") }}',
+            data: {
+                orders: orderDetails,
+                _token: '{{ csrf_token() }}',
+            },
+            dataType: 'json',
+            success: function(response) {
+                console.log('Ajax Success Response:', response);
+                    if (response.status === 'success') {
+                        console.log('Order placed successfully!');
+                        alertify.success('Order placed successfully!');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        alertify.error('Failed to place the order.');
+                    }
                 },
-                dataType: 'json',
-                success: function(response) {
-                    console.log('Ajax Success Response:', response);
-                        if (response.status === 'success') {
-                            // Clear the cart after placing the order
-                            console.log('Order placed successfully!');
-                            alertify.success('Order placed successfully!');
-                            setTimeout(function () {
-                                location.reload();
-                            }, 1500);
-                        } else {
-                            alertify.error('Failed to place the order.');
-                        }
-                    },
 
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.log('Error occurred in Ajax request.');
-                    console.log('jqXHR:', jqXHR);
-                    console.log('textStatus:', textStatus);
-                    console.log('errorThrown:', errorThrown);
-                    alertify.error('An error occurred while placing the order.');
-                }
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log('Error occurred in Ajax request.');
+                console.log('jqXHR:', jqXHR);
+                console.log('textStatus:', textStatus);
+                console.log('errorThrown:', errorThrown);
+                alertify.error('An error occurred while placing the order.');
+            }
 
-            });
-        }
+        });
+    }
 
 
     $(document).ready(function() {

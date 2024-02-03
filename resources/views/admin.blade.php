@@ -22,8 +22,7 @@
     <!-- Include AlertifyJS after jQuery -->
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
     <!-- Your custom scripts -->
-    <script src="jquery-3.6.1.js"></script>
-    
+
     <style>
         .ajs-top-right {
             top: 10px;
@@ -81,7 +80,7 @@
 
 <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
 <script>
 
 </script>
